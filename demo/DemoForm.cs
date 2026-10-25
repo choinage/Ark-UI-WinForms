@@ -507,10 +507,25 @@ namespace ArkUiDemo
             body.Controls.Add(add);
             body.Controls.Add(cancel);
 
-            drawer.Controls.Add(body);
+            // 页头 56 固定，剩下的给表单。这里同样不用 Dock：Dock 的分配顺序
+            // 跟 z-order 反着来，Fill 若先被分配就会把整块高度吃干净，
+            // 页头再盖上去，第一组输入框就只剩半截。
+            head.Dock = DockStyle.None;
+            body.Dock = DockStyle.None;
+
             drawer.Controls.Add(head);
-            body.BringToFront();
-            head.BringToFront();
+            drawer.Controls.Add(body);
+
+            head.SetBounds(0, 0, drawer.DrawerWidth, 56);
+            body.SetBounds(0, 56, drawer.DrawerWidth, 496);
+
+            drawer.Resize += delegate
+            {
+                int w = drawer.ClientSize.Width;
+                int h = drawer.ClientSize.Height;
+                head.SetBounds(0, 0, w, 56);
+                body.SetBounds(0, 56, w, Math.Max(0, h - 56));
+            };
         }
 
         /// <summary>一对"标签 + 输入框"，纵向排列，返回输入框方便取值。</summary>

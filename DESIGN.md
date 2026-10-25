@@ -220,6 +220,10 @@ Left = Parent.ClientSize.Width - round(356 * slide)
 抽屉挡住列表右侧时，要把 `ArkListView.WidthLimit` 设成露出来的宽度，
 否则最后一列永远藏在抽屉底下。
 
+抽屉内部还是"页头 + 表单"两段，照 7.3 的办法摆。这里踩过一次：表单给 `Dock = Fill`、
+页头给 `Dock = Top`，黑色页头把第一组输入框盖掉了半截。原因是 Dock 的分配顺序和 z-order 反着来，
+`Fill` 那块先拿到空间就吃掉整块高度，`Top` 只剩 0。两块都改成 `SetBounds` 就没事。
+
 ## 8. 不要做的事
 
 - 不用圆角卡片 + 阴影。这套语言靠 1px 线和留白分层。
