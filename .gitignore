@@ -1,0 +1,19 @@
+# 生成物
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.userprefs
+
+# 设计器缓存
+*.cache
+
+# ReSharper / Rider
+_ReSharper*/
+*.DotSettings.user
+
+# 系统
+Thumbs.db
+desktop.ini
+.DS_Store
