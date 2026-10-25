@@ -6,9 +6,9 @@
 A WinForms implementation of the **endfield** family from [Ark UI](https://github.com/Brandon030722/ark-ui-skill).
 Square geometry, charcoal-on-paper palette, one signal yellow accent, no third-party dependencies.
 
-![列表页与右侧抽屉](screenshots/roster.png)
+![列表页与右侧录入抽屉](screenshots/drawer.png)
 
-> 截图来自使用本控件集实现的学生管理系统（课程设计作业）。Demo 工程的界面长得类似，跑起来看更直接。
+> 截图全部来自本仓库的 `demo` 工程，`F5` 跑起来就是这几个页面。
 
 ---
 
@@ -29,7 +29,7 @@ Square geometry, charcoal-on-paper palette, one signal yellow accent, no third-p
 
 界面骨架的五个数字也一起固定下来了：顶栏 72、左导航 180、内容区自适应、状态条 30、抽屉 356。
 
-![成绩页，底部是可拖动的分布图](screenshots/score.png)
+![组件标本页，四种角色色、三种按钮、可拖动的面板](screenshots/specimen.png)
 
 ## 快速开始
 
@@ -102,7 +102,9 @@ lv.SignalRowIndex = 0;   // 第一名左边给一条常驻黄竖条
 
 完整规范见 [DESIGN.md](DESIGN.md)。
 
-![寝室评比结果，第一名左侧有常驻黄竖条](screenshots/dorm.png)
+![列表页，黑表头 + 斑马纹 + 第一行左侧常驻黄竖条](screenshots/roster.png)
+
+![关于页，说明文字与代码写法](screenshots/about.png)
 
 ## 几个刻意的决定
 
@@ -137,7 +139,7 @@ ark-ui-winforms/
 │   ├─ Program.cs
 │   ├─ DemoForm.cs             三个演示页
 │   └─ ArkDrawer.cs            右侧抽屉（示例，不在库里）
-├─ screenshots/
+├─ screenshots/                四个演示页的实拍图
 ├─ DESIGN.md                   设计规范与实现约定
 └─ LICENSE
 ```
@@ -155,8 +157,7 @@ ark-ui-winforms/
 - 上表里的色值取自 Ark UI 的 `assets/tokens/ark-ui.tokens.json`（`themes.endfield`），
   剩余的中性色是按这套规律推出来的。
 
-**代码来源**：从作者自己的课程设计项目「学生管理系统」（C# / WinForms / .NET Framework 4.6.1）里抽出来，
-去掉业务逻辑，补上注释和 Demo。抽的时候刻意的原则是：库只管"长什么样、怎么响应鼠标"，
+**代码来源**：从一个自己写的 C# / WinForms 桌面项目里抽出来，去掉业务逻辑，补上注释和 Demo。抽的时候刻意的原则是：库只管"长什么样、怎么响应鼠标"，
 不碰任何数据模型。
 
 如果你要用 Ark UI 的原版（HTML / CSS / React），去原仓库；如果你要 Web 端而不是 WinForms，也用原仓库。

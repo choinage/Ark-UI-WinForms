@@ -234,6 +234,31 @@ namespace ArkUiDemo
             pnlStage.Controls.Add(pnlWipe);
         }
 
+        /// <summary>
+        /// 「页头 96 + 正文」两段式页面的统一摆法。不用 Dock 是因为 Fill 和 Top
+        /// 谁先被分配空间取决于 z-order，改一次顺序就换一个错法；两块高度都固定，
+        /// 直接按高度摆，Resize 时重算一次就不会错。
+        /// </summary>
+        private void StackTop(Panel page, Panel head, Panel body)
+        {
+            head.Dock = DockStyle.None;
+            body.Dock = DockStyle.None;
+
+            page.Controls.Add(head);
+            page.Controls.Add(body);
+
+            head.SetBounds(0, 0, 1000, 96);
+            body.SetBounds(0, 96, 1000, 562);
+
+            page.Resize += delegate
+            {
+                int w = page.ClientSize.Width;
+                int h = page.ClientSize.Height;
+                head.SetBounds(0, 0, w, 96);
+                body.SetBounds(0, 96, w, Math.Max(0, h - 96));
+            };
+        }
+
         private void ShowPage(int index)
         {
             if (index == _page) return;
@@ -355,6 +380,9 @@ namespace ArkUiDemo
 
             // 列表
             lv = new ArkListView { Dock = DockStyle.Fill, FillLastColumn = true };
+            // 行背景只铺到列宽合计为止，抽屉挡住右侧时会露出一条列表自己的底色。
+            // 用纸色而不是白色，露出来也不刺眼。
+            lv.BackColor = ArkTheme.Paper;
             lv.Columns.Add("编号", 110);
             lv.Columns.Add("名称", 240);
             lv.Columns.Add("位置", 200);
@@ -366,7 +394,7 @@ namespace ArkUiDemo
             {
                 // 抽屉挡住列表右侧时，列宽只算到露出来的部分，
                 // 否则最后一列永远藏在抽屉底下
-                Panel host = drawer.Parent;
+                Control host = drawer.Parent;
                 lv.WidthLimit = (drawer.Visible && host != null)
                     ? host.ClientSize.Width - (int)Math.Round(drawer.DrawerWidth * s)
                     : 0;
@@ -374,17 +402,33 @@ namespace ArkUiDemo
             };
             BuildDrawerBody();
 
-            page.Controls.Add(lv);
-            page.Controls.Add(query);
+            // 这一页不用 Dock 摆位。页头 96 + 查询条 46 的堆叠顺序由 Dock 的
+            // z-order 规则决定，改来改去都是「谁先被切走一截」，一出错就是
+            // 查询条压住页头、列表整块顶到顶栏下沿。三块高度都固定，
+            // 直接按高度摆，Resize 时重算一次就够。
+            head.Dock = DockStyle.None;
+            query.Dock = DockStyle.None;
+            lv.Dock = DockStyle.None;
+
             page.Controls.Add(head);
+            page.Controls.Add(query);
+            page.Controls.Add(lv);
             page.Controls.Add(drawer);
 
-            // Dock 顺序反过来：先 Fill，再 Bottom，最后 Top
-            lv.BringToFront();
-            query.BringToFront();
-            head.BringToFront();
+            head.SetBounds(0, 0, 1000, 96);
+            query.SetBounds(0, 96, 1000, 46);
+            lv.SetBounds(0, 142, 1000, 518);
+            drawer.BringToFront();
 
-            page.Resize += delegate { if (drawer != null) drawer.LayoutDrawer(); };
+            page.Resize += delegate
+            {
+                int w = page.ClientSize.Width;
+                int h = page.ClientSize.Height;
+                head.SetBounds(0, 0, w, 96);
+                query.SetBounds(0, 96, w, 46);
+                lv.SetBounds(0, 142, w, Math.Max(0, h - 142));
+                drawer.LayoutDrawer();
+            };
 
             FillList();
             return page;
@@ -686,10 +730,10 @@ namespace ArkUiDemo
             body.Controls.Add(note);
 
             // 抓手 + 可拖动改高度的面板
-            ArkRule rule = new ArkRule { Dock = DockStyle.None, Left = 24, Width = 1000, Top = 254 };
+            ArkRule rule = new ArkRule { Dock = DockStyle.None, Left = 24, Width = 952, Top = 254 };
             body.Controls.Add(rule);
 
-            Panel grow = new Panel { Left = 24, Top = 300, Width = 1000, Height = 120, BackColor = ArkTheme.Panel };
+            Panel grow = new Panel { Left = 24, Top = 300, Width = 952, Height = 120, BackColor = ArkTheme.Panel };
             Label growTip = new Label
             {
                 Text = "按住上面的短横上下拖，改这块面板的高度。拖拽增量用 Cursor.Position 算，别用 MouseEventArgs.Y。",
@@ -709,7 +753,7 @@ namespace ArkUiDemo
                 }
             };
 
-            ArkGrip grip = new ArkGrip { Dock = DockStyle.None, Left = 24, Width = 1000, Top = 270 };
+            ArkGrip grip = new ArkGrip { Dock = DockStyle.None, Left = 24, Width = 952, Top = 270, BackColor = ArkTheme.Paper };
             int dragStartY = 0;
             int dragStartH = 0;
 
@@ -734,10 +778,7 @@ namespace ArkUiDemo
             body.Controls.Add(grip);
             body.Controls.Add(grow);
 
-            page.Controls.Add(body);
-            page.Controls.Add(head);
-            body.BringToFront();
-            head.BringToFront();
+            StackTop(page, head, body);
             return page;
         }
 
@@ -809,10 +850,7 @@ namespace ArkUiDemo
                 y += 24;
             }
 
-            page.Controls.Add(body);
-            page.Controls.Add(head);
-            body.BringToFront();
-            head.BringToFront();
+            StackTop(page, head, body);
             return page;
         }
 
