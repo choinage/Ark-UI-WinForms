@@ -29,10 +29,10 @@ namespace ArkUi
         /// <summary>左上角的两位编号，如 "01"。</summary>
         public string IndexText { get; set; }
 
-        /// <summary>中文标题，如 "学生管理"。</summary>
+        /// <summary>中文标题，如 "设备清单"。</summary>
         public string Caption { get; set; }
 
-        /// <summary>英文小标，如 "STUDENT"。</summary>
+        /// <summary>英文小标，如 "ROSTER"。</summary>
         public string Micro { get; set; }
 
         public bool IsActive

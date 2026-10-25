@@ -14,7 +14,8 @@ Square geometry, charcoal-on-paper palette, one signal yellow accent, no third-p
 
 ## 它是什么
 
-一套可以直接 `using ArkUi;` 的界面语言，包含 6 个公开类型：
+一套独立的 WinForms 界面模板。配色、几何、动效都写成可以直接 `using ArkUi;` 的控件，
+跟具体业务没有关系，任何 WinForms 桌面程序都能装上用。库里共 6 个公开类型：
 
 | 类型 | 作用 |
 |---|---|
@@ -36,13 +37,13 @@ Square geometry, charcoal-on-paper palette, one signal yellow accent, no third-p
 **要求**：Windows + Visual Studio 2015 及以上（工程是经典非 SDK 格式，目标框架 .NET Framework 4.6.1）。
 
 ```bash
-git clone https://github.com/<your-name>/ark-ui-winforms.git
-cd ark-ui-winforms
+git clone https://github.com/choinage/Ark-UI-WinForms.git
+cd Ark-UI-WinForms
 start ArkUiWinForms.sln
 ```
 
 把 `demo` 设为启动项目，F5 就能看到三个页面：列表、组件标本、关于。
-想看真实项目里的效果，可以翻 `screenshots/`。
+每个页面都有一张实拍图放在 `screenshots/`。
 
 在自己的工程里用：
 
@@ -70,16 +71,17 @@ ArkButton submit = new ArkButton
 ArkRailItem item = new ArkRailItem
 {
     IndexText = "01",
-    Caption = "学生管理",
-    Micro = "STUDENT",
+    Caption = "设备台账",
+    Micro = "DEVICE",
     Dock = DockStyle.Fill
 };
 item.IsActive = true;
 
 // 5. 列表
 ArkListView lv = new ArkListView { Dock = DockStyle.Fill, FillLastColumn = true };
-lv.Columns.Add("学号", 110);
-lv.Columns.Add("姓名", 120);
+lv.Columns.Add("编号", 110);
+lv.Columns.Add("名称", 200);
+lv.Columns.Add("状态", 120);
 lv.SignalRowIndex = 0;   // 第一名左边给一条常驻黄竖条
 ```
 
@@ -157,8 +159,9 @@ ark-ui-winforms/
 - 上表里的色值取自 Ark UI 的 `assets/tokens/ark-ui.tokens.json`（`themes.endfield`），
   剩余的中性色是按这套规律推出来的。
 
-**代码来源**：从一个自己写的 C# / WinForms 桌面项目里抽出来，去掉业务逻辑，补上注释和 Demo。抽的时候刻意的原则是：库只管"长什么样、怎么响应鼠标"，
-不碰任何数据模型。
+**代码来源**：库和 demo 都是在这个仓库里从零写的。库这一层只负责"长什么样、怎么响应鼠标"，
+不含数据模型、不含存储，谁引用它谁提供数据。`demo` 用一份虚构的设备清单把几组控件摆一遍，
+跑起来就能看见效果，也可以照着 `DemoForm.cs` 的结构改自己的页面。
 
 如果你要用 Ark UI 的原版（HTML / CSS / React），去原仓库；如果你要 Web 端而不是 WinForms，也用原仓库。
 
