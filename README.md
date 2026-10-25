@@ -127,7 +127,7 @@ Details 视图下这两个事件的触发顺序不稳定，分开画会出现背
 ## 目录结构
 
 ```
-ark-ui-winforms/
+Ark-UI-WinForms/
 ├─ ArkUiWinForms.sln
 ├─ src/ArkUi/                  控件库（Library，.NET Framework 4.6.1）
 │   ├─ ArkTheme.cs             配色 / 字体 / Blend
