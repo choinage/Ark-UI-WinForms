@@ -178,16 +178,33 @@ SetStyle(ControlStyles.AllPaintingInWmPaint
 文字统一在 `OnDrawItem` 里画完，`OnDrawSubItem` 留空。
 Details 视图下这两个事件的顺序不稳定，分开画会出现背景盖掉第 2 列以后文字。
 
-### 7.3 Dock 顺序
+### 7.3 Dock 顺序（以及为什么 demo 里干脆不用）
 
-WinForms 的 `Controls.Add` 是往集合末尾加，而 z-order 索引 0 在最上层。
-**先加的控件先被分配空间**，所以：
+`Controls.Add` 往集合末尾加，z-order 索引 0 在最上层。Dock 的分配跟 z-order 绑在一起：
+非 Fill 的控件按 z-order 从底到顶依次切走一条边，Fill 最后拿剩下的，也就是**后 Add 的靠外**。
 
-- 顶部 / 底部 / 侧边条 → 先 Add
-- 中间 Fill → 后 Add
-- 浮动层（抽屉、横扫条）→ 不 Dock，靠 `BringToFront()` 压住
+这条规则靠记忆去写，十有八九要错一次。错出来的样子还不像布局问题：
+查询条压住页头、列表整块顶到顶栏下沿、正文第一行被标题盖掉半行。都不报错，只是位置不对。
 
-顺序错了的症状是"某个控件高度为 0，看不见但没报错"。
+所以凡是"页头 + 正文"这种两块高度固定的结构，直接用 `SetBounds` 摆：
+
+```csharp
+head.Dock = DockStyle.None;
+body.Dock = DockStyle.None;
+page.Controls.Add(head);
+page.Controls.Add(body);
+
+page.Resize += delegate
+{
+    int w = page.ClientSize.Width;
+    int h = page.ClientSize.Height;
+    head.SetBounds(0, 0, w, 96);
+    body.SetBounds(0, 96, w, Math.Max(0, h - 96));
+};
+```
+
+Dock 只留给"一层就填满"的容器：顶栏、左导航、状态条、内容区。这种只有一个方向，
+不存在两块叠着抢空间的问题。浮动层（抽屉、横扫条）不 Dock，靠 `BringToFront()` 压住。
 
 ### 7.4 抽屉
 
